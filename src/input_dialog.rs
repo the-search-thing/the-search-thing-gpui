@@ -30,6 +30,7 @@ actions!(
         Paste,
         Cut,
         Copy,
+        Quit
     ]
 );
 
@@ -658,6 +659,7 @@ impl Render for TextInput {
             .on_action(cx.listener(Self::paste))
             .on_action(cx.listener(Self::cut))
             .on_action(cx.listener(Self::copy))
+            .on_action(cx.listener(Self::quit))
             .on_mouse_down(MouseButton::Left, cx.listener(Self::on_mouse_down))
             .on_mouse_up(MouseButton::Left, cx.listener(Self::on_mouse_up))
             .on_mouse_up_out(MouseButton::Left, cx.listener(Self::on_mouse_up))
@@ -699,6 +701,7 @@ pub fn register_text_input_keybindings(cx: &mut gpui::App) {
         KeyBinding::new("ctrl-x", Cut, None),
         KeyBinding::new("home", Home, None),
         KeyBinding::new("end", End, None),
-        KeyBinding::new("ctrl-cmd-space", ShowCharacterPalette, None),
+        KeyBinding::new("ctrl-w", Quit, None),
+        KeyBinding::new("cmd-w", Quit, None),
     ]);
 }
