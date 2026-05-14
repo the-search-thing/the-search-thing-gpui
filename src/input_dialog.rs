@@ -5,10 +5,10 @@ use std::ops::Range;
 
 use gpui::{
     ClipboardItem, Context, CursorStyle, ElementId, ElementInputHandler, Entity,
-    EntityInputHandler, FocusHandle, Focusable, GlobalElementId, Hsla, KeyBinding, LayoutId,
-    MouseButton, MouseDownEvent, MouseMoveEvent, PaintQuad, Pixels, Point,
-    ShapedLine, SharedString, Style, TextRun, UTF16Selection, UnderlineStyle, Window,
-    actions, div, fill, prelude::*, px,
+    EntityInputHandler, EventEmitter, FocusHandle, Focusable, GlobalElementId, Hsla, KeyBinding,
+    LayoutId, MouseButton, MouseDownEvent, MouseMoveEvent, PaintQuad, Pixels, Point, ShapedLine,
+    SharedString, Style, TextRun, UTF16Selection, UnderlineStyle, Window, actions, div, fill,
+    prelude::*, px,
 };
 use gpui::colors::Colors;
 use unicode_segmentation::*;
@@ -30,9 +30,16 @@ actions!(
         Paste,
         Cut,
         Copy,
-        Quit
+        Quit,
+        SubmitSearch,
     ]
 );
+
+/// Dispatched when the user submits the search field (Enter).
+#[derive(Clone)]
+pub struct SearchSubmitted {
+    pub query: String,
+}
 
 pub struct TextInput {
     focus_handle: FocusHandle,
@@ -316,7 +323,19 @@ impl TextInput {
     fn quit(&mut self, _: &Quit, _: &mut Window, cx: &mut Context<Self>) {
         cx.quit();
     }
+
+    fn submit_search(&mut self, _: &SubmitSearch, _: &mut Window, cx: &mut Context<Self>) {
+        let query = self.content.trim();
+        if query.is_empty() {
+            return;
+        }
+        cx.emit(SearchSubmitted {
+            query: query.to_string(),
+        });
+    }
 }
+
+impl EventEmitter<SearchSubmitted> for TextInput {}
 
 fn prev_utf8_char_start(s: &str, byte_end_exclusive: usize) -> usize {
     debug_assert!(byte_end_exclusive <= s.len());
@@ -660,6 +679,7 @@ impl Render for TextInput {
             .on_action(cx.listener(Self::cut))
             .on_action(cx.listener(Self::copy))
             .on_action(cx.listener(Self::quit))
+            .on_action(cx.listener(Self::submit_search))
             .on_mouse_down(MouseButton::Left, cx.listener(Self::on_mouse_down))
             .on_mouse_up(MouseButton::Left, cx.listener(Self::on_mouse_up))
             .on_mouse_up_out(MouseButton::Left, cx.listener(Self::on_mouse_up))
@@ -703,5 +723,6 @@ pub fn register_text_input_keybindings(cx: &mut gpui::App) {
         KeyBinding::new("end", End, None),
         KeyBinding::new("ctrl-w", Quit, None),
         KeyBinding::new("cmd-w", Quit, None),
+        KeyBinding::new("enter", SubmitSearch, None),
     ]);
 }
