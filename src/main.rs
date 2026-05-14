@@ -46,7 +46,17 @@ impl Render for LayoutExample {
                             .p_4()
                             .text_sm()
                             .text_color(colors.text)
-                            .child("Recent searches"),
+                            .child("Recent searches")
+                            .child(
+                                div()
+                                    .flex()
+                                    .flex_col()
+                                    .gap_2()
+                                    .text_color(colors.disabled)
+                                    .child("No recent searches")
+
+                            )
+                        ,
                     )
                     .child(
                         div()
@@ -60,7 +70,7 @@ impl Render for LayoutExample {
                             .p_4()
                             .text_sm()
                             .text_color(colors.text)
-                            .child("Right column"),
+                            .child("Search for something to see results"),
                     )
             } else {
                 div()
@@ -81,7 +91,7 @@ impl Render for LayoutExample {
                         div()
                             .text_color(colors.disabled)
                             .text_center()
-                            .child("Your search awaits..."),
+                            .child("Start typing to get started..."),
                     )
             })
     }
