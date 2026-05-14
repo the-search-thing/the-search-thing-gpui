@@ -2,7 +2,7 @@ mod input_dialog;
 
 use gpui::{
     App, Application, Bounds, Context, Entity, Focusable, Render, TitlebarOptions, Window,
-    WindowBounds, WindowOptions, div, prelude::*, px, relative, size,
+    WindowBounds, WindowOptions, div, prelude::*, px, size,
 };
 use gpui::colors::Colors;
 
@@ -32,35 +32,57 @@ impl Render for LayoutExample {
                     .flex_1()
                     .w_full()
                     .min_h(px(0.))
+            )
+            .child(
+                div()
+                    .flex()
+                    .flex_col()
+                    .flex_1()
+                    .w_full()
+                    .min_h(px(0.))
+                    .items_center()
+                    .gap_2()
                     .child(
                         div()
-                            .flex_initial()
-                            .flex_basis(relative(1.0 / 3.0))
-                            .flex()
-                            .flex_col()
-                            .rounded_md()
-                            .border_1()
-                            .border_color(colors.border)
-                            .bg(colors.container)
-                            .p_4()
-                            .text_sm()
                             .text_color(colors.text)
-                            .child("Recent searches"),
+                            .text_center()
+                            .child("welcome to the-search-thing"),
                     )
                     .child(
                         div()
-                            .flex_1()
-                            .flex()
-                            .flex_col()
-                            .rounded_md()
-                            .border_1()
-                            .border_color(colors.border)
-                            .bg(colors.container)
-                            .p_4()
-                            .text_sm()
-                            .text_color(colors.text)
-                            .child("Right column"),
-                    ),
+                            .text_color(colors.disabled)
+                            .text_center()
+                            .child("Please start typing to get started..."),
+                    )
+                    // .child(
+                        // div()
+                        //     .flex_initial()
+                        //     .flex_basis(relative(1.0 / 3.0))
+                        //     .flex()
+                        //     .flex_col()
+                        //     .rounded_md()
+                        //     .border_1()
+                        //     .border_color(colors.border)
+                        //     .bg(colors.container)
+                        //     .p_4()
+                        //     .text_sm()
+                        //     .text_color(colors.text)
+                        //     .child("Recent searches"),
+                    // )
+                    // .child(
+                    //     div()
+                    //         .flex_1()
+                    //         .flex()
+                    //         .flex_col()
+                    //         .rounded_md()
+                    //         .border_1()
+                    //         .border_color(colors.border)
+                    //         .bg(colors.container)
+                    //         .p_4()
+                    //         .text_sm()
+                    //         .text_color(colors.text)
+                    //         .child("Right column"),
+                    // ),
             )
     }
 }
@@ -68,7 +90,7 @@ fn main() {
     Application::new().run(|cx: &mut App| {
         register_text_input_keybindings(cx);
 
-        let bounds = Bounds::centered(None, size(px(900.), px(800.)), cx);
+        let bounds = Bounds::centered(None, size(px(800.), px(450.)), cx);
         let window = cx
             .open_window(
                 WindowOptions {
