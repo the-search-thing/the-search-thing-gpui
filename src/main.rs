@@ -1,8 +1,8 @@
 mod input_dialog;
 
 use gpui::{
-    App, Application, Bounds, Context, Entity, Focusable, Render, TitlebarOptions, Window,
-    WindowBounds, WindowOptions, div, prelude::*, px, size,
+    App, AppContext, Application, Bounds, Context, Entity, Focusable, Render, TitlebarOptions,
+    Window, WindowBounds, WindowOptions, div, prelude::*, px, relative, size,
 };
 use gpui::colors::Colors;
 
@@ -13,8 +13,9 @@ struct LayoutExample {
 }
 
 impl Render for LayoutExample {
-    fn render(&mut self, window: &mut Window, _cx: &mut Context<Self>) -> impl IntoElement {
+    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let colors = Colors::for_appearance(window);
+        let has_text = cx.read_entity(&self.dialog_input, |input, _app| !input.content.is_empty());
 
         div()
             .id("main")
@@ -24,16 +25,44 @@ impl Render for LayoutExample {
             .w_full()
             .bg(colors.background)
             .child(self.dialog_input.clone())
-            .child(
+            .child(if has_text {
                 div()
                     .flex()
                     .flex_row()
-                    .gap_4()
                     .flex_1()
                     .w_full()
                     .min_h(px(0.))
-            )
-            .child(
+                    .gap_4()
+                    .child(
+                        div()
+                            .flex_initial()
+                            .flex_basis(relative(1.0 / 3.0))
+                            .flex()
+                            .flex_col()
+                            .rounded_md()
+                            .border_1()
+                            .border_color(colors.border)
+                            .bg(colors.container)
+                            .p_4()
+                            .text_sm()
+                            .text_color(colors.text)
+                            .child("Recent searches"),
+                    )
+                    .child(
+                        div()
+                            .flex_1()
+                            .flex()
+                            .flex_col()
+                            .rounded_md()
+                            .border_1()
+                            .border_color(colors.border)
+                            .bg(colors.container)
+                            .p_4()
+                            .text_sm()
+                            .text_color(colors.text)
+                            .child("Right column"),
+                    )
+            } else {
                 div()
                     .flex()
                     .flex_col()
@@ -52,38 +81,9 @@ impl Render for LayoutExample {
                         div()
                             .text_color(colors.disabled)
                             .text_center()
-                            .child("Please start typing to get started..."),
+                            .child("Your search awaits..."),
                     )
-                    // .child(
-                        // div()
-                        //     .flex_initial()
-                        //     .flex_basis(relative(1.0 / 3.0))
-                        //     .flex()
-                        //     .flex_col()
-                        //     .rounded_md()
-                        //     .border_1()
-                        //     .border_color(colors.border)
-                        //     .bg(colors.container)
-                        //     .p_4()
-                        //     .text_sm()
-                        //     .text_color(colors.text)
-                        //     .child("Recent searches"),
-                    // )
-                    // .child(
-                    //     div()
-                    //         .flex_1()
-                    //         .flex()
-                    //         .flex_col()
-                    //         .rounded_md()
-                    //         .border_1()
-                    //         .border_color(colors.border)
-                    //         .bg(colors.container)
-                    //         .p_4()
-                    //         .text_sm()
-                    //         .text_color(colors.text)
-                    //         .child("Right column"),
-                    // ),
-            )
+            })
     }
 }
 fn main() {
