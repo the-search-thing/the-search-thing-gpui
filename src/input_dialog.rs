@@ -16,6 +16,7 @@ use unicode_segmentation::*;
 actions!(
     input_dialog,
     [
+        DeleteWord,
         Backspace,
         Delete,
         Left,
@@ -115,6 +116,14 @@ impl TextInput {
     fn delete(&mut self, _: &Delete, window: &mut Window, cx: &mut Context<Self>) {
         if self.selected_range.is_empty() {
             self.select_to(self.next_boundary(self.cursor_offset()), cx)
+        }
+        self.replace_text_in_range(None, "", window, cx)
+    }
+
+    fn delete_word(&mut self, _: &DeleteWord, window: &mut Window, cx: &mut Context<Self>) {
+        if self.selected_range.is_empty() {
+            let cursor = self.cursor_offset();
+            self.select_to(self.previous_word_delete_start(cursor), cx);
         }
         self.replace_text_in_range(None, "", window, cx)
     }
@@ -271,6 +280,53 @@ impl TextInput {
             .grapheme_indices(true)
             .find_map(|(idx, _)| (idx > offset).then_some(idx))
             .unwrap_or(self.content.len())
+    }
+
+    /// Byte index to delete back to for Ctrl/Cmd+Backspace-style word deletion:
+    /// skips whitespace left of the cursor, then skips one run of non-whitespace.
+    fn previous_word_delete_start(&self, offset: usize) -> usize {
+        let s = self.content.as_str();
+        let mut i = offset.min(s.len());
+        if i == 0 {
+            return 0;
+        }
+
+        while i > 0 {
+            let prev = prev_utf8_char_start(s, i);
+            let ch = s[prev..].chars().next().unwrap_or('\0');
+            if !ch.is_whitespace() {
+                break;
+            }
+            i = prev;
+        }
+
+        while i > 0 {
+            let prev = prev_utf8_char_start(s, i);
+            let ch = s[prev..].chars().next().unwrap_or('\0');
+            if ch.is_whitespace() {
+                break;
+            }
+            i = prev;
+        }
+
+        i
+    }
+
+    fn quit(&mut self, _: &Quit, _: &mut Window, cx: &mut Context<Self>) {
+        cx.quit();
+    }
+}
+
+fn prev_utf8_char_start(s: &str, byte_end_exclusive: usize) -> usize {
+    debug_assert!(byte_end_exclusive <= s.len());
+    debug_assert!(byte_end_exclusive == 0 || s.is_char_boundary(byte_end_exclusive));
+    let mut i = byte_end_exclusive;
+    loop {
+        debug_assert!(i > 0);
+        i -= 1;
+        if s.is_char_boundary(i) {
+            return i;
+        }
     }
 }
 
@@ -590,6 +646,7 @@ impl Render for TextInput {
             .cursor(CursorStyle::IBeam)
             .on_action(cx.listener(Self::backspace))
             .on_action(cx.listener(Self::delete))
+            .on_action(cx.listener(Self::delete_word))
             .on_action(cx.listener(Self::left))
             .on_action(cx.listener(Self::right))
             .on_action(cx.listener(Self::select_left))
@@ -626,6 +683,8 @@ pub fn register_text_input_keybindings(cx: &mut gpui::App) {
     cx.bind_keys([
         KeyBinding::new("backspace", Backspace, None),
         KeyBinding::new("delete", Delete, None),
+        KeyBinding::new("ctrl-backspace", DeleteWord, None),
+        KeyBinding::new("cmd-backspace", DeleteWord, None),
         KeyBinding::new("left", Left, None),
         KeyBinding::new("right", Right, None),
         KeyBinding::new("shift-left", SelectLeft, None),
