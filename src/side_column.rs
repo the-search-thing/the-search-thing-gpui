@@ -32,3 +32,20 @@ pub fn recent_searches_sidebar(colors: &Colors) -> Div {
                 .child("No recent searches"),
         )
 }
+
+/// Settings nav column: wider than `side_column_shell` (~⅓) so tab labels stay on one line.
+pub fn settings_side_column_shell(colors: &Colors) -> Div {
+    div()
+        .flex_initial()
+        .flex_basis(relative(0.4))
+        .min_w(px(240.))
+        .flex()
+        .flex_col()
+        .rounded_md()
+        .border_1()
+        .border_color(colors.border)
+        .bg(colors.container)
+        .p_4()
+        .text_sm()
+        .text_color(colors.text)
+}

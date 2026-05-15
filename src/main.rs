@@ -13,7 +13,7 @@ use the_search_thing::sidecar::native_ipc::NativeSearchRow;
 
 use input_dialog::{register_text_input_keybindings, SearchSubmitted, TextInput};
 use settings::{render_tab_content, settings_nav_item, SettingsTab};
-use side_column::{recent_searches_sidebar, side_column_shell};
+use side_column::{recent_searches_sidebar, settings_side_column_shell};
 
 actions!(
     app_shell,
@@ -117,7 +117,7 @@ impl Render for AppShell {
                         .min_h(px(0.))
                         .gap_4()
                         .child(
-                            side_column_shell(&colors).child(
+                            settings_side_column_shell(&colors).child(
                                 div()
                                     .flex()
                                     .flex_col()
