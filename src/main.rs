@@ -74,29 +74,30 @@ impl Render for LayoutExample {
                     .w_full()
                     .min_h(px(0.))
                     .gap_4()
-                    .child(
-                        div()
-                            .flex_initial()
-                            .flex_basis(relative(1.0 / 3.0))
-                            .flex()
-                            .flex_col()
-                            .rounded_md()
-                            .border_1()
-                            .border_color(colors.border)
-                            .bg(colors.container)
-                            .p_4()
-                            .text_sm()
-                            .text_color(colors.text)
-                            .child("Recent searches")
-                            .child(
-                                div()
-                                    .flex()
-                                    .flex_col()
-                                    .gap_2()
-                                    .text_color(colors.disabled)
-                                    .child("No recent searches"),
-                            ),
-                    )
+                // this is the recent searches section
+                    // .child(
+                    //     div()
+                    //         .flex_initial()
+                    //         .flex_basis(relative(1.0 / 3.0))
+                    //         .flex()
+                    //         .flex_col()
+                    //         .rounded_md()
+                    //         .border_1()
+                    //         .border_color(colors.border)
+                    //         .bg(colors.container)
+                    //         .p_4()
+                    //         .text_sm()
+                    //         .text_color(colors.text)
+                    //         // .child("Recent searches")
+                    //         // .child(
+                    //         //     div()
+                    //         //         .flex()
+                    //         //         .flex_col()
+                    //         //         .gap_2()
+                    //         //         .text_color(colors.disabled)
+                    //         //         .child("No recent searches"),
+                    //         // ),
+                    // )
                     .child(
                         div()
                             .flex_1()
