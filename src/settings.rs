@@ -200,6 +200,7 @@ fn render_general_tab(colors: &Colors) -> impl IntoElement {
                     row_heading(colors, "Font", "Choose Sans-Serif or Mono."),
                     select_like(colors, "Manrope"),
                 ))
+                // search scope settings
                 // .child(general_settings_row(
                 //     colors,
                 //     row_heading(colors, "Search scope", "Files, folders, or both."),
